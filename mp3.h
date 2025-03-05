@@ -1,0 +1,88 @@
+#include <iostream>
+#include <vector>
+#include <tuple>
+#include <mpg123.h>
+
+#define BUFFER_SIZE 8192  // Buffer size for decoding
+
+// Function to decode MP3 and return samples, sample rate, channels, and duration
+std::tuple<std::vector<double>, long, int, double> decodeMP3ToFloat(const std::string& mp3FilePath) {
+    std::vector<double> floatSamples;
+    long sampleRate = 0;
+    int channels = 0;
+    double duration = 0.0;
+
+    // Initialize mpg123
+    mpg123_init();
+    mpg123_handle* mh = mpg123_new(NULL, NULL);
+    if (mpg123_open(mh, mp3FilePath.c_str()) != MPG123_OK) {
+        std::cerr << "Error opening MP3 file: " << mp3FilePath << std::endl;
+        return {floatSamples, sampleRate, channels, duration};  // Return empty result
+    }
+
+    int encoding;
+    mpg123_getformat(mh, &sampleRate, &channels, &encoding);
+
+    if (encoding != MPG123_ENC_SIGNED_16) {
+        std::cerr << "Unsupported encoding format!" << std::endl;
+        mpg123_close(mh);
+        mpg123_delete(mh);
+        mpg123_exit();
+        return {floatSamples, sampleRate, channels, duration};
+    }
+
+    // Get total length in samples
+    off_t totalFrames;
+    mpg123_scan(mh);  // Ensure we can retrieve length
+    totalFrames = mpg123_length(mh);
+
+    if (totalFrames > 0 && sampleRate > 0) {
+        duration = static_cast<double>(totalFrames) / static_cast<double>(sampleRate);
+    }
+
+    std::vector<unsigned char> buffer(BUFFER_SIZE);
+    size_t done;
+
+    // Read MP3 and convert samples
+    while (mpg123_read(mh, buffer.data(), BUFFER_SIZE, &done) == MPG123_OK) {
+        for (size_t i = 0; i < done; i += 2) { // Assuming 16-bit PCM
+            int16_t sample = buffer[i] | (buffer[i + 1] << 8);
+            floatSamples.push_back(sample / 32768.0); // Normalize to -1.0 to 1.0
+        }
+    }
+
+    // Cleanup
+    mpg123_close(mh);
+    mpg123_delete(mh);
+    mpg123_exit();
+
+    return {floatSamples, sampleRate, channels, duration};
+}
+
+// int main(int argc, char* argv[]) {
+//     if (argc != 2) {
+//         std::cerr << "Usage: " << argv[0] << " <mp3-file>" << std::endl;
+//         return 1;
+//     }
+
+//     std::string filePath = argv[1];
+
+//     // Call function and receive the result
+//     auto [samples, sampleRate, channels, duration] = decodeMP3ToFloat(filePath);
+
+//     if (samples.empty()) {
+//         std::cerr << "Failed to decode MP3!" << std::endl;
+//         return 1;
+//     }
+
+//     std::cout << "MP3 Decoded Successfully!" << std::endl;
+//     std::cout << "Sample Rate: " << sampleRate << ", Channels: " << channels << std::endl;
+//     std::cout << "Duration: " << duration << " seconds" << std::endl;
+
+//     // Print first 10 samples
+//     for (size_t i = 0; i < 10 && i < samples.size(); i++) {
+//         std::cout << "Sample[" << i << "] = " << samples[i] << std::endl;
+//     }
+
+//     return 0;
+// }
