@@ -34,7 +34,7 @@ This project implements a music recognition system using an algorithm to identif
 - **Python**: For webinterface.
 
 ## Installation
-- try to use it one Linux it would be easier!!
+- Try to use it on Linux it would be a lot easier!!
 
 ### Linux/Mac
 
