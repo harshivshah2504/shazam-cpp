@@ -4,7 +4,6 @@ import os
 import subprocess
 
 
-st.write("Secrets:", st.secrets)
 
 # Ensure correct library path for MongoDB C++ driver
 os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
