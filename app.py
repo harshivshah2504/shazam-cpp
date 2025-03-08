@@ -2,19 +2,17 @@ import streamlit as st
 import tempfile
 import os
 import subprocess
-
-
-import subprocess
-import os
-import streamlit as st
+import shutil
 
 # Get the absolute path of the project directory
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 BUILD_DIR = os.path.join(PROJECT_DIR, "build")
 
 def build_cpp_project():
-    if not os.path.exists(BUILD_DIR):
-        os.makedirs(BUILD_DIR)
+    # If build directory exists, delete it to prevent CMake cache conflicts
+    if os.path.exists(BUILD_DIR):
+        shutil.rmtree(BUILD_DIR)  # Delete old build directory
+    os.makedirs(BUILD_DIR)
 
     try:
         # Run CMake
