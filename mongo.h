@@ -12,7 +12,15 @@
 #include <vector>
 #include <map>
 #include <optional>
+#include <cstdlib>  // Required for std::getenv
 
+
+
+
+std::string getEnv(const std::string& key, const std::string& defaultValue = "") {
+    const char* value = std::getenv(key.c_str());  // Get environment variable
+    return value ? std::string(value) : defaultValue;
+}
 
 
 class MongoClient : public DBClient {
@@ -29,23 +37,29 @@ private:
     }
     
 public:
-    MongoClient(const std::string& uri) : connected(false) {
-        // Make sure the MongoDB instance is initialized
-        getInstance();
-    }
-    
-    bool Connect() override {
-        try {
-            mongocxx::uri uri(getConnectionUri());
-            client = mongocxx::client(uri);
-            db = client["song-recognition"];
-            connected = true;
-            return true;
-        } catch (const std::exception& e) {
-            std::cerr << "Error connecting to MongoDB: " << e.what() << std::endl;
-            return false;
+        MongoClient() : connected(false) {
+            getInstance();  // Ensure MongoDB instance is initialized
         }
-    }
+
+    
+        bool Connect() override {
+            try {
+                std::string uriString = getConnectionUri();
+                if (uriString.empty()) return false;
+        
+                mongocxx::uri uri(uriString);
+                client = mongocxx::client(uri);
+                db = client["SeekTuneDB"];  // Replace with your actual database name
+                connected = true;
+        
+                std::cout << "Connected to MongoDB Atlas Successfully!" << std::endl;
+                return true;
+            } catch (const std::exception& e) {
+                std::cerr << "Error connecting to MongoDB Atlas: " << e.what() << std::endl;
+                return false;
+            }
+        }
+        
     
     void Disconnect() override {
         // The MongoDB C++ driver handles disconnection in the destructor
@@ -136,7 +150,7 @@ public:
         }
     }
     
-    uint32_t RegisterSong(const std::string& songTitle, const std::string& songArtist, const std::string& ytID) override {
+    uint32_t RegisterSong(const std::string& songTitle, const std::string& songArtist) override {
         if (!connected) return 0;
 
         try {
@@ -166,10 +180,8 @@ public:
             bsoncxx::builder::stream::document doc_builder;
             std::cout << "SongID: " << songID << std::endl;
             std::cout << "key: " << key << std::endl;
-            std::cout << "ytID: " << ytID << std::endl;
             doc_builder << "_id" << static_cast<int64_t>(songID)
-                        << "key" << key
-                        << "ytID" << ytID;
+                        << "key" << key;
 
             collection.insert_one(doc_builder.view());
             return songID;
@@ -178,7 +190,7 @@ public:
             std::cerr << "Error registering song: " << e.what() << std::endl;
             // Check for duplicate key error
             if (e.code().value() == 11000) {  // MongoDB duplicate key error code
-                std::cerr << "Duplicate entry detected for ytID or key: " << ytID << " or " << generateSongKey(songTitle, songArtist) << std::endl;
+                std::cerr << "Duplicate entry detected for key: " << generateSongKey(songTitle, songArtist) << std::endl;
             }
             return 0;
         }
@@ -188,7 +200,7 @@ public:
         if (!connected) return std::nullopt;
         
         // Valid filter keys
-        const std::string validKeys = "_id | ytID | key";
+        const std::string validKeys = "_id | key";
         if (validKeys.find(filterKey) == std::string::npos) {
             std::cerr << "Invalid filter key: " << filterKey << std::endl;
             return std::nullopt;
@@ -220,14 +232,11 @@ public:
                 auto doc_view = doc->view();
 
                 // Ensure the fields exist before accessing them
-                bsoncxx::document::element ytID_elem = doc_view["ytID"];
                 bsoncxx::document::element key_elem = doc_view["key"];
 
-                if (ytID_elem && ytID_elem.type() == bsoncxx::type::k_string &&
-                    key_elem && key_elem.type() == bsoncxx::type::k_string) {
+                if (key_elem && key_elem.type() == bsoncxx::type::k_string) {
                     
                     // Retrieve string values correctly using bsoncxx::string::to_string
-                    std::string ytID = bsoncxx::string::to_string(ytID_elem.get_string().value);
                     std::string key = bsoncxx::string::to_string(key_elem.get_string().value);
 
                     // Parse the key to get title and artist
@@ -235,7 +244,7 @@ public:
                     std::string title = (separatorPos != std::string::npos) ? key.substr(0, separatorPos) : key;
                     std::string artist = (separatorPos != std::string::npos) ? key.substr(separatorPos + 3) : "";
 
-                    return Song{title, artist, ytID};  // Construct and return the Song object
+                    return Song{title, artist};  // Construct and return the Song object
                 }
             }
 
@@ -250,9 +259,6 @@ public:
         return GetSong("_id", std::to_string(songID));
     }
     
-    std::optional<Song> GetSongByYTID(const std::string& ytID) override {
-        return GetSong("ytID", ytID);
-    }
     
     std::optional<Song> GetSongByKey(const std::string& key) override {
         return GetSong("key", key);
@@ -291,25 +297,16 @@ public:
     
 private:
     std::string getConnectionUri() {
-        // Get environment variables for MongoDB connection
-        std::string dbUsername = getEnv("DB_USER", "");
-        std::string dbPassword = getEnv("DB_PASS", "");
-        std::string dbName = getEnv("DB_NAME", "");
-        std::string dbHost = getEnv("DB_HOST", "");
-        std::string dbPort = getEnv("DB_PORT", "");
+        std::string mongoUri = getEnv("MONGO_URI", "");
         
-        if (dbUsername.empty() || dbPassword.empty()) {
-            return "mongodb://localhost:27017";
+        if (mongoUri.empty()) {
+            std::cerr << "Error: MONGO_URI environment variable is not set!" << std::endl;
+            return "";
         }
         
-        return "mongodb://" + dbUsername + ":" + dbPassword + "@" + 
-               dbHost + ":" + dbPort + "/" + dbName;
+        return mongoUri;
     }
-    
-    std::string getEnv(const std::string& key, const std::string& defaultValue = "") {
-        const char* value = std::getenv(key.c_str());
-        return value ? value : defaultValue;
-    }
+
     
     uint32_t generateUniqueID() {
         // Simple implementation - in production, use a more robust method
