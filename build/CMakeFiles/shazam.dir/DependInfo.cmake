@@ -1,15 +1,26 @@
-
-# Consider dependencies only in project.
-set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
-
 # The set of languages for which implicit dependencies are needed:
 set(CMAKE_DEPENDS_LANGUAGES
+  "CXX"
+  )
+# The set of files for implicit dependencies of each language:
+set(CMAKE_DEPENDS_CHECK_CXX
+  "/workspaces/shazam-cpp/query.cpp" "/workspaces/shazam-cpp/build/CMakeFiles/shazam.dir/query.cpp.o"
+  "/workspaces/shazam-cpp/utils.cpp" "/workspaces/shazam-cpp/build/CMakeFiles/shazam.dir/utils.cpp.o"
+  )
+set(CMAKE_CXX_COMPILER_ID "GNU")
+
+# Preprocessor definitions for this target.
+set(CMAKE_TARGET_DEFINITIONS_CXX
+  "BOOST_ALL_NO_LIB"
+  "BOOST_SYSTEM_DYN_LINK"
   )
 
-# The set of dependency files which are needed:
-set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/harshiv27/Desktop/shazam-cpp/query.cpp" "CMakeFiles/shazam.dir/query.cpp.o" "gcc" "CMakeFiles/shazam.dir/query.cpp.o.d"
-  "/home/harshiv27/Desktop/shazam-cpp/utils.cpp" "CMakeFiles/shazam.dir/utils.cpp.o" "gcc" "CMakeFiles/shazam.dir/utils.cpp.o.d"
+# The include file search paths:
+set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "../."
+  "/usr/local/include/mongocxx"
+  "/usr/local/include/bsoncxx"
+  "/usr/include/eigen3"
   )
 
 # Targets to which this target links.
