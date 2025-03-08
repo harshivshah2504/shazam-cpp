@@ -28,14 +28,13 @@ This project implements a music recognition system using an algorithm to identif
 ## Technologies Used
 
 - **C++**: Main language for implementing the core logic.
-- **C**: Utilized for certain performance-critical sections.
+- **MongoDB**: For storing the song data.
 - **Makefile**: For automating the build process.
 - **CMake**: For managing the build configuration.
-- **Python**: Scripts for data preprocessing and analysis.
-- **TypeScript**: Minimal usage for any web-based interfaces.
+- **Python**: For webinterface.
 
 ## Installation
-try to use it one Linux it would be easier
+- try to use it one Linux it would be easier!!
 
 ### Linux/Mac
 
