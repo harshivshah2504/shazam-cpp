@@ -1,19 +1,17 @@
 import streamlit as st
-import numpy as np
 import tempfile
 import os
 import subprocess
-import scipy.io.wavfile as wav
 
 # Function to run `./shazam` with an audio file
 def find_song(audio_path):
     result = subprocess.run(["./shazam", audio_path], capture_output=True, text=True)
-    return result.stdout  # Return output from `./shazam`
+    return result.returncode, result.stdout  
 
 # Function to run `./add` with song details
 def add_song(file_path, song_name, artist_name):
     result = subprocess.run(["./add", file_path, song_name, artist_name], capture_output=True, text=True)
-    return result.stdout  # Return output from `./add`
+    return result.returncode, result.stdout 
 
 # Streamlit UI
 st.title("🎵 SeekTune")
@@ -36,9 +34,14 @@ with tab1:
         st.audio(temp_mp3_path, format='audio/mp3')
 
         if st.button("🔍 Match Song"):
-            output = find_song(temp_mp3_path)
-            st.write("🎶 **Match Result:**", output)
-            os.remove(temp_mp3_path)  # Cleanup temp file
+            with st.spinner("Matching song..."):
+                return_code, output = find_song(temp_mp3_path)
+                if return_code == 0:
+                    st.success("Match Found!")
+                else:
+                    st.error("No match found or an error occurred.")
+                st.write("**Match Result:**", output)
+                os.remove(temp_mp3_path)  # Cleanup temp file
 
 # 🎵 Tab 2: Add a New Song to Database
 with tab2:
@@ -53,7 +56,11 @@ with tab2:
             temp_song_path = temp_song.name
 
         if st.button("Submit"):
-            output = add_song(temp_song_path, song_name, artist_name)
-            st.success("Song added successfully!")
-            st.text(output)
-            os.remove(temp_song_path)  # Cleanup temp file
+            with st.spinner("Adding song to database..."):
+                return_code, output = add_song(temp_song_path, song_name, artist_name)
+                if return_code == 0:
+                    st.success("Song added successfully!")
+                else:
+                    st.error("Failed to add song.")
+                st.text(output)
+                os.remove(temp_song_path)  # Cleanup temp file
