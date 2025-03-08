@@ -3,6 +3,7 @@
 #include <cstdlib>  // For getenv
 #include <iostream>
 #include <memory>
+#include <utils.h>
 
 std::unique_ptr<DBClient> NewDBClient() {
     const char* mongoUri = std::getenv("MONGO_URI");  // Get the environment variable
@@ -14,3 +15,4 @@ std::unique_ptr<DBClient> NewDBClient() {
 
     return std::make_unique<MongoClient>(mongoUri);  // Use env variable
 }
+

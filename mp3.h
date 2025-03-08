@@ -4,6 +4,7 @@
 #include <mpg123.h>
 
 #define BUFFER_SIZE 8192  // Buffer size for decoding
+#define TARGET_SAMPLE_RATE 48000  // Force output sample rate to 48kHz
 
 // Function to decode MP3 and return samples, sample rate, channels, and duration
 std::tuple<std::vector<double>, long, int, double> decodeMP3ToFloat(const std::string& mp3FilePath) {
@@ -21,6 +22,12 @@ std::tuple<std::vector<double>, long, int, double> decodeMP3ToFloat(const std::s
     }
 
     int encoding;
+    
+    // Force decoding to 48000 Hz, Stereo, 16-bit PCM
+    mpg123_format_none(mh);
+    mpg123_format(mh, TARGET_SAMPLE_RATE, MPG123_STEREO, MPG123_ENC_SIGNED_16);
+
+    // Get the actual format
     mpg123_getformat(mh, &sampleRate, &channels, &encoding);
 
     if (encoding != MPG123_ENC_SIGNED_16) {
@@ -32,9 +39,8 @@ std::tuple<std::vector<double>, long, int, double> decodeMP3ToFloat(const std::s
     }
 
     // Get total length in samples
-    off_t totalFrames;
     mpg123_scan(mh);  // Ensure we can retrieve length
-    totalFrames = mpg123_length(mh);
+    off_t totalFrames = mpg123_length(mh);
 
     if (totalFrames > 0 && sampleRate > 0) {
         duration = static_cast<double>(totalFrames) / static_cast<double>(sampleRate);
@@ -59,6 +65,7 @@ std::tuple<std::vector<double>, long, int, double> decodeMP3ToFloat(const std::s
     return {floatSamples, sampleRate, channels, duration};
 }
 
+// // Main function to test MP3 decoding
 // int main(int argc, char* argv[]) {
 //     if (argc != 2) {
 //         std::cerr << "Usage: " << argv[0] << " <mp3-file>" << std::endl;
@@ -76,7 +83,7 @@ std::tuple<std::vector<double>, long, int, double> decodeMP3ToFloat(const std::s
 //     }
 
 //     std::cout << "MP3 Decoded Successfully!" << std::endl;
-//     std::cout << "Sample Rate: " << sampleRate << ", Channels: " << channels << std::endl;
+//     std::cout << "Sample Rate: " << sampleRate << " Hz, Channels: " << channels << std::endl;
 //     std::cout << "Duration: " << duration << " seconds" << std::endl;
 
 //     // Print first 10 samples

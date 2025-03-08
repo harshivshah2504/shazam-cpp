@@ -18,12 +18,8 @@ vector<Complex> recursiveFFT(vector<Complex>& input) {
         odd[i] = input[i * 2 + 1];
     }
     
-    // Parallel processing for large inputs
-    future<vector<Complex>> evenFFT = async(launch::async, recursiveFFT, ref(even));
-    future<vector<Complex>> oddFFT = async(launch::async, recursiveFFT, ref(odd));
-    
-    even = evenFFT.get();
-    odd = oddFFT.get();
+    even = recursiveFFT(even);
+    odd = recursiveFFT(odd);
     
     vector<Complex> fftResult(N);
     for (int k = 0; k < N / 2; k++) {

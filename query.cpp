@@ -16,20 +16,35 @@ struct Match {
     uint32_t songID;
     std::string songTitle;
     std::string songArtist;
-    std::string youTubeID;
     uint32_t timestamp;
     double score;
 
-    Match(uint32_t songID, const std::string& songTitle, const std::string& songArtist,
-          const std::string& youTubeID, uint32_t timestamp, double score)
-        : songID(songID), songTitle(songTitle), songArtist(songArtist),
-          youTubeID(youTubeID), timestamp(timestamp), score(score) {}
+    Match(uint32_t id, const std::string& title, const std::string& artist,
+          uint32_t time, double sc)
+        : songID(id), songTitle(title), songArtist(artist),
+          timestamp(time), score(sc) {}
 };
 
-// Function prototypes
+// Function to analyze timing differences for fingerprint matching
 std::map<uint32_t, double> analyzeRelativeTiming(
-    const std::map<unsigned int, std::vector<std::pair<unsigned int, unsigned int>>>& matches
-);
+    const std::map<uint32_t, std::vector<std::pair<uint32_t, uint32_t>>>& matches
+) {
+    std::map<uint32_t, double> scores;
+    for (const auto& [songID, times] : matches) {
+        int count = 0;
+        for (size_t i = 0; i < times.size(); ++i) {
+            for (size_t j = i + 1; j < times.size(); ++j) {
+                double sampleDiff = std::abs(static_cast<double>(times[i].first) - times[j].first);
+                double dbDiff = std::abs(static_cast<double>(times[i].second) - times[j].second);
+                if (std::abs(sampleDiff - dbDiff) < 100) {
+                    count++;
+                }
+            }
+        }
+        scores[songID] = static_cast<double>(count);
+    }
+    return scores;
+}
 
 // Function to find a match for a given audio sample
 std::vector<Match> FindMatch(const std::vector<double>& audioSamples, long audioDuration, double sampleRate) {
@@ -50,8 +65,8 @@ std::vector<Match> FindMatch(const std::vector<double>& audioSamples, long audio
         addresses.push_back(fp.first);
     }
 
-    // Step 3: Connect to MongoDB
-    MongoClient db("mongodb://localhost:27017");
+    // Step 3: Connect to MongoDB Atlas (or fallback to local)
+    MongoClient db(getEnv("MONGO_URI", "mongodb://localhost:27017"));
     if (!db.Connect()) {
         throw std::runtime_error("Database connection failed.");
     }
@@ -78,8 +93,7 @@ std::vector<Match> FindMatch(const std::vector<double>& audioSamples, long audio
         if (!song) continue;
 
         std::sort(timestamps[songID].begin(), timestamps[songID].end());
-
-        Match match(songID, song->title, song->artist, song->youTubeID, timestamps[songID][0], points);
+        Match match(songID, song->title, song->artist, timestamps[songID][0], points);
         matchList.push_back(match);
     }
 
@@ -89,27 +103,6 @@ std::vector<Match> FindMatch(const std::vector<double>& audioSamples, long audio
     });
 
     return matchList;
-}
-
-// Function to analyze timing differences for fingerprint matching
-std::map<uint32_t, double> analyzeRelativeTiming(
-    const std::map<uint32_t, std::vector<std::pair<uint32_t, uint32_t>>>& matches
-) {
-    std::map<uint32_t, double> scores;
-    for (const auto& [songID, times] : matches) {
-        int count = 0;
-        for (size_t i = 0; i < times.size(); ++i) {
-            for (size_t j = i + 1; j < times.size(); ++j) {
-                double sampleDiff = std::abs(static_cast<double>(times[i].first) - times[j].first);
-                double dbDiff = std::abs(static_cast<double>(times[i].second) - times[j].second);
-                if (std::abs(sampleDiff - dbDiff) < 50) {
-                    count++;
-                }
-            }
-        }
-        scores[songID] = static_cast<double>(count);
-    }
-    return scores;
 }
 
 // Function to process and find a song match
@@ -133,14 +126,14 @@ void findSongMatch(const std::string& filePath) {
         if (matches.empty()) {
             std::cout << "\nNo match found." << std::endl;
         } else {
-            std::cout << "Matches Found:\n";
+            std::cout << "\nMatches Found:\n";
             for (size_t i = 0; i < std::min(matches.size(), static_cast<size_t>(20)); ++i) {
-                std::cout << "\t- " << matches[i].songTitle << " by " << matches[i].songArtist
+                std::cout << matches[i].songTitle << " by " << matches[i].songArtist
                           << ", score: " << std::fixed << std::setprecision(2) << matches[i].score << std::endl;
             }
 
             // Display top match prediction
-            std::cout << "\nFinal Prediction: " << matches[0].songTitle << " by " << matches[0].songArtist
+            std::cout << "\nBest Match: " << matches[0].songTitle << " by " << matches[0].songArtist
                       << ", score: " << std::fixed << std::setprecision(2) << matches[0].score << std::endl;
         }
 

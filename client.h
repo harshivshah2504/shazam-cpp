@@ -14,7 +14,6 @@
 struct Song {
     std::string title;
     std::string artist;
-    std::string youTubeID;
 };
 
 // DBClient interface that mimics the Go interface
@@ -30,11 +29,10 @@ public:
     virtual std::map<uint32_t, std::vector<Couple>> GetCouples(const std::vector<uint32_t>& addresses) = 0;
     
     virtual int TotalSongs() = 0;
-    virtual uint32_t RegisterSong(const std::string& songTitle, const std::string& songArtist, const std::string& ytID) = 0;
+    virtual uint32_t RegisterSong(const std::string& songTitle, const std::string& songArtist) = 0;
     
     virtual std::optional<Song> GetSong(const std::string& filterKey, const std::string& value) = 0;
     virtual std::optional<Song> GetSongByID(uint32_t songID) = 0;
-    virtual std::optional<Song> GetSongByYTID(const std::string& ytID) = 0;
     virtual std::optional<Song> GetSongByKey(const std::string& key) = 0;
     
     virtual bool DeleteSongByID(uint32_t songID) = 0;

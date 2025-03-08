@@ -11,8 +11,9 @@
 
 
 
+
 // Function to process and save the song in the database
-bool ProcessAndSaveSong(const std::string& songFilePath, const std::string& songTitle, const std::string& songArtist, const std::string& ytID) {
+bool ProcessAndSaveSong(const std::string& songFilePath, const std::string& songTitle, const std::string& songArtist) {
     try {
         // Step 1: Initialize the database client
         std::unique_ptr<DBClient> db = NewDBClient(); 
@@ -33,7 +34,7 @@ bool ProcessAndSaveSong(const std::string& songFilePath, const std::string& song
         }
 
         // Step 5: Register song in database and get song ID
-        uint32_t songID = db->RegisterSong(songTitle, songArtist, ytID);
+        uint32_t songID = db->RegisterSong(songTitle, songArtist);
 
         // Step 6: Extract peaks from spectrogram
         std::vector<Peak> peaks = ExtractPeaks(spectrogram, duration); // Implement peak extraction
@@ -64,19 +65,18 @@ bool ProcessAndSaveSong(const std::string& songFilePath, const std::string& song
 
 
 int main(int argc, char** argv) {
-    if (argc != 5) {
-        std::cerr << "Usage: ./add <songFilePath> <songTitle> <songArtist> <YouTubeID>" << std::endl;
+    if (argc != 4) {
+        std::cerr << "Usage: ./add <songFilePath> <songTitle> <songArtist>" << std::endl;
         return 1;
     }
 
     // Get the command-line arguments
     std::string songFilePath = argv[1];  // Path to the WAV file
     std::string songTitle = argv[2];     // Song title
-    std::string songArtist = argv[3];    // Song artist
-    std::string ytID = argv[4];          // YouTube ID
+    std::string songArtist = argv[3];    // Song artist    
 
     // Call the function to process and save the song
-    if (ProcessAndSaveSong(songFilePath, songTitle, songArtist, ytID)) {
+    if (ProcessAndSaveSong(songFilePath, songTitle, songArtist)) {
         std::cout << "Song processed and saved successfully." << std::endl;
     } else {
         std::cout << "Failed to process and save the song." << std::endl;

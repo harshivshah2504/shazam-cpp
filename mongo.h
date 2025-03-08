@@ -12,15 +12,11 @@
 #include <vector>
 #include <map>
 #include <optional>
-#include <cstdlib>  // Required for std::getenv
+#include <cstdlib>  
+#include <utils.h>
 
 
 
-
-std::string getEnv(const std::string& key, const std::string& defaultValue = "") {
-    const char* value = std::getenv(key.c_str());  // Get environment variable
-    return value ? std::string(value) : defaultValue;
-}
 
 
 class MongoClient : public DBClient {
@@ -37,8 +33,15 @@ private:
     }
     
 public:
-        MongoClient() : connected(false) {
-            getInstance();  // Ensure MongoDB instance is initialized
+        MongoClient(const std::string& uri) : connected(false), client(mongocxx::uri(uri)) {
+            getInstance();
+
+            try {
+                db = client["SeekTuneDB"];  // Replace with your actual database name
+                connected = true;
+            } catch (const std::exception& e) {
+                std::cerr << "Error connecting to MongoDB Atlas: " << e.what() << std::endl;
+            }
         }
 
     
