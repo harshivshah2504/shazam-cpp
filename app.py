@@ -50,7 +50,6 @@ def find_song(audio_path):
 
     return result.returncode, result.stdout
 
-# Function to run `./add` with song details
 def add_song(file_path, song_name, artist_name):
     add_exe = "/usr/local/bin/add"
     wrapper = ensure_wrapper_script()
@@ -67,10 +66,14 @@ def add_song(file_path, song_name, artist_name):
 
     result = subprocess.run(command, capture_output=True, text=True, env=env)
 
+    st.write("**STDOUT:**", result.stdout)
+    st.write("**STDERR:**", result.stderr)  # 🔍 Show errors in UI
+
     if result.returncode != 0:
         st.error(f"Error executing `{add_exe}`: {result.stderr}")
 
     return result.returncode, result.stdout
+
 
 
 # Streamlit UI
