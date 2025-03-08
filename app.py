@@ -3,6 +3,11 @@ import tempfile
 import os
 import subprocess
 
+
+# Ensure correct library path for MongoDB C++ driver
+os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
+
+
 # Function to check if an executable exists
 def check_executable(path):
     return os.path.exists(path) and os.access(path, os.X_OK)
