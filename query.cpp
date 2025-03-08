@@ -66,7 +66,7 @@ std::vector<Match> FindMatch(const std::vector<double>& audioSamples, long audio
     }
 
     // Step 3: Connect to MongoDB Atlas (or fallback to local)
-    MongoClient db(getEnv("MONGO_URI", "mongodb://localhost:27017"));
+    MongoClient db("mongodb://localhost:27017");
     if (!db.Connect()) {
         throw std::runtime_error("Database connection failed.");
     }

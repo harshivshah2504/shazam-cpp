@@ -52,7 +52,7 @@ public:
         
                 mongocxx::uri uri(uriString);
                 client = mongocxx::client(uri);
-                db = client["SeekTuneDB"];  // Replace with your actual database name
+                db = client["SeekTuneDB"]; 
                 connected = true;
         
                 std::cout << "Connected to MongoDB Atlas Successfully!" << std::endl;

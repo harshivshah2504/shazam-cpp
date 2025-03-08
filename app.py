@@ -4,66 +4,17 @@ import os
 import subprocess
 
 
-
-# Ensure correct library path for MongoDB C++ driver
-os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
-
-# Function to check if an executable exists
-def check_executable(path):
-    return os.path.exists(path) and os.access(path, os.X_OK)
-
-# Function to run `shazam` with an audio file
+# Function to run `./shazam` with an audio file
 def find_song(audio_path):
-    shazam_exe = "build/shazam"
+    result = subprocess.run(["build/shazam", audio_path], capture_output=True, text=True)
+    return result.returncode, result.stdout  
 
-    if not check_executable(shazam_exe):
-        return 1, f"Error: {shazam_exe} not found or not executable!"
-
-    command = [shazam_exe, audio_path]
-    st.write(f"Running command: `{' '.join(command)}`")  # Debugging info
-
-    # Set environment variables for the subprocess
-    env = os.environ.copy()
-    env["MONGO_URI"] = st.secrets["MONGO_URI"]
-
-    result = subprocess.run(command, capture_output=True, text=True, env=env)
-
-    st.write("**STDOUT:**", result.stdout)
-    st.write("**STDERR:**", result.stderr)  # Show errors in UI
-
-    if result.returncode != 0:
-        st.error(f"Error executing `{shazam_exe}`: {result.stderr}")
-
-    return result.returncode, result.stdout
-
-# Function to run `add` with song details
+# Function to run `./add` with song details
 def add_song(file_path, song_name, artist_name):
-    add_exe = "build/add"
+    result = subprocess.run(["build/add", file_path, song_name, artist_name], capture_output=True, text=True)
+    return result.returncode, result.stdout 
 
-    if not check_executable(add_exe):
-        return 1, f"Error: {add_exe} not found or not executable!"
-
-    command = [add_exe, file_path, song_name, artist_name]
-    st.write(f"Running command: `{' '.join(command)}`")  # Debugging info
-
-    # Set environment variables for the subprocess
-    env = os.environ.copy()
-    env["MONGO_URI"] = st.secrets["MONGO_URI"]
-
-    result = subprocess.run(command, capture_output=True, text=True, env=env)
-
-    st.write("**STDOUT:**", result.stdout)
-    st.write("**STDERR:**", result.stderr)  # Show errors in UI
-
-    if result.returncode != 0:
-        st.error(f"Error executing `{add_exe}`: {result.stderr}")
-
-    return result.returncode, result.stdout
-
-# --------------------------
-# 🔹 STREAMLIT UI
-# --------------------------
-
+# Streamlit UI
 st.title("🎵 SeekTune")
 st.subheader("Find songs by uploading an audio file or adding new songs to the database.")
 
@@ -91,7 +42,7 @@ with tab1:
                 else:
                     st.error("No match found or an error occurred.")
                 st.write("**Match Result:**", output)
-                os.remove(temp_mp3_path)  # Cleanup temp file
+                os.remove(temp_mp3_path)
 
 # 🎵 Tab 2: Add a New Song to Database
 with tab2:
@@ -108,7 +59,6 @@ with tab2:
         if st.button("Submit"):
             with st.spinner("Adding song to database..."):
                 return_code, output = add_song(temp_song_path, song_name, artist_name)
-                st.write(return_code)
                 if return_code == 0:
                     st.success("Song added successfully!")
                 else:
