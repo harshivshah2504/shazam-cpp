@@ -9,6 +9,7 @@ find_package(mongocxx REQUIRED)
 find_package(bsoncxx REQUIRED)
 
 
+
 # Include directories
 include_directories(. /usr/local/include /usr/local/include/mongocxx /usr/local/include/bsoncxx /usr/include/eigen3)
 

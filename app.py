@@ -8,32 +8,30 @@ import shutil
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 BUILD_DIR = os.path.join(PROJECT_DIR, "build")
 
+# Function to build the C++ project
 def build_cpp_project():
-    # If build directory exists, delete it to prevent CMake cache conflicts
     if os.path.exists(BUILD_DIR):
-        shutil.rmtree(BUILD_DIR)  # Delete old build directory
+        shutil.rmtree(BUILD_DIR)  # Remove old build directory
     os.makedirs(BUILD_DIR)
 
     try:
-        # Run CMake
-        result = subprocess.run(["cmake", ".."], cwd=BUILD_DIR, check=True, capture_output=True, text=True)
+        result = subprocess.run(["cmake", "..", "-DCMAKE_PREFIX_PATH=/usr/local/lib/cmake/mongocxx-4.0.0;/usr/local/lib/cmake/bsoncxx-4.0.0"], cwd=BUILD_DIR, check=True, capture_output=True, text=True)
         st.text(result.stdout)  # Show CMake output
 
-        # Run Make
-        result = subprocess.run(["make"], cwd=BUILD_DIR, check=True, capture_output=True, text=True)
+        result = subprocess.run(["make", "-j$(nproc)"], cwd=BUILD_DIR, check=True, capture_output=True, text=True)
         st.text(result.stdout)  # Show Make output
-
     except subprocess.CalledProcessError as e:
         st.error(f"Build failed! Error:\n{e.stderr}")
-        return False  # Indicate failure
+        return False
 
-    return True  # Indicate success
+    return True
 
 # Run before using C++ executables
 if build_cpp_project():
     st.success("✅ C++ Build Successful!")
 else:
     st.error("❌ C++ Build Failed. Check logs.")
+
 
 
 
