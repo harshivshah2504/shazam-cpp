@@ -3,6 +3,9 @@ import tempfile
 import os
 import subprocess
 
+
+st.write("Secrets:", st.secrets)
+
 # Ensure correct library path for MongoDB C++ driver
 os.environ["LD_LIBRARY_PATH"] = "/usr/local/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
 
@@ -12,7 +15,7 @@ def check_executable(path):
 
 # Function to run `shazam` with an audio file
 def find_song(audio_path):
-    shazam_exe = "/usr/local/bin/shazam"
+    shazam_exe = "build/shazam"
 
     if not check_executable(shazam_exe):
         return 1, f"Error: {shazam_exe} not found or not executable!"
@@ -36,7 +39,7 @@ def find_song(audio_path):
 
 # Function to run `add` with song details
 def add_song(file_path, song_name, artist_name):
-    add_exe = "/usr/local/bin/add"
+    add_exe = "build/add"
 
     if not check_executable(add_exe):
         return 1, f"Error: {add_exe} not found or not executable!"
