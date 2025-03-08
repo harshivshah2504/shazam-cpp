@@ -12,7 +12,7 @@ def ensure_wrapper_script():
     wrapper_path = "run_with_libs.sh"
     
     # Get MongoDB URI from Streamlit secrets
-    mongo_uri = st.secrets["mongo_uri"]
+    mongo_uri = st.secrets["MONGO_URI"]
     
     if not os.path.exists(wrapper_path):
         with open(wrapper_path, "w") as f:
