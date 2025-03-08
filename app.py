@@ -4,15 +4,49 @@ import os
 import subprocess
 
 
+import streamlit as st
+import tempfile
+import os
+import subprocess
+
+# Function to check if an executable exists
+def check_executable(path):
+    return os.path.exists(path) and os.access(path, os.X_OK)
+
 # Function to run `./shazam` with an audio file
 def find_song(audio_path):
-    result = subprocess.run(["build/shazam", audio_path], capture_output=True, text=True)
-    return result.returncode, result.stdout  
+    shazam_exe = "build/shazam"
+
+    if not check_executable(shazam_exe):
+        return 1, f"Error: {shazam_exe} not found or not executable!"
+
+    command = [shazam_exe, audio_path]
+    st.write(f"Running command: `{command}`")  # Debugging info
+
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    if result.returncode != 0:
+        st.error(f"Error executing `{shazam_exe}`: {result.stderr}")
+
+    return result.returncode, result.stdout
 
 # Function to run `./add` with song details
 def add_song(file_path, song_name, artist_name):
-    result = subprocess.run(["build/add", file_path, song_name, artist_name], capture_output=True, text=True)
-    return result.returncode, result.stdout 
+    add_exe = "build/add"
+
+    if not check_executable(add_exe):
+        return 1, f"Error: {add_exe} not found or not executable!"
+
+    command = [add_exe, file_path, song_name, artist_name]
+    st.write(f"Running command: `{command}`")  # Debugging info
+
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    if result.returncode != 0:
+        st.error(f"Error executing `{add_exe}`: {result.stderr}")
+
+    return result.returncode, result.stdout
+
 
 # Streamlit UI
 st.title("🎵 SeekTune")
@@ -59,6 +93,7 @@ with tab2:
         if st.button("Submit"):
             with st.spinner("Adding song to database..."):
                 return_code, output = add_song(temp_song_path, song_name, artist_name)
+                st.write(return_code)
                 if return_code == 0:
                     st.success("Song added successfully!")
                 else:
