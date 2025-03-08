@@ -206,9 +206,9 @@ CMakeFiles/shazam.dir/query.cpp.o: \
  /usr/include/c++/11/bits/unique_ptr.h \
  /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/sstream \
  /usr/include/c++/11/bits/sstream.tcc \
- /home/harshiv27/Desktop/shazam-cpp/mongo.h \
- /home/harshiv27/Desktop/shazam-cpp/client.h /usr/include/c++/11/optional \
- /usr/include/c++/11/memory \
+ /home/harshiv27/Desktop/shazam-cpp/header/mongo.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/client.h \
+ /usr/include/c++/11/optional /usr/include/c++/11/memory \
  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
  /usr/include/c++/11/bits/align.h /usr/include/c++/11/bit \
  /usr/include/c++/11/bits/shared_ptr.h \
@@ -220,7 +220,7 @@ CMakeFiles/shazam.dir/query.cpp.o: \
  /usr/include/c++/11/bits/atomic_lockfree_defines.h \
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h \
- /home/harshiv27/Desktop/shazam-cpp/./models.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/models.h \
  /usr/include/c++/11/complex \
  /usr/local/include/mongocxx/v_noabi/mongocxx/client.hpp \
  /usr/local/include/mongocxx/v_noabi/mongocxx/client-fwd.hpp \
@@ -461,20 +461,15 @@ CMakeFiles/shazam.dir/query.cpp.o: \
  /usr/local/include/bsoncxx/v_noabi/bsoncxx/builder/stream/closed_context.hpp \
  /usr/local/include/bsoncxx/v_noabi/bsoncxx/builder/stream/helpers.hpp \
  /usr/local/include/bsoncxx/v_noabi/bsoncxx/builder/stream/single_context.hpp \
- /home/harshiv27/Desktop/shazam-cpp/utils.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/utils.h \
  /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
  /usr/include/c++/11/bits/fs_path.h /usr/include/c++/11/codecvt \
  /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
- /home/harshiv27/Desktop/shazam-cpp/spectogram.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/spectogram.h \
  /usr/include/c++/11/numeric /usr/include/c++/11/bits/stl_numeric.h \
  /usr/include/c++/11/pstl/glue_numeric_defs.h \
- /home/harshiv27/Desktop/shazam-cpp/fft.h /usr/include/c++/11/future \
- /usr/include/c++/11/mutex /usr/include/c++/11/bits/std_mutex.h \
- /usr/include/c++/11/bits/unique_lock.h \
- /usr/include/c++/11/condition_variable /usr/include/c++/11/atomic \
- /usr/include/c++/11/bits/atomic_futex.h \
- /usr/include/c++/11/bits/std_thread.h \
- /home/harshiv27/Desktop/shazam-cpp/filter.h \
- /home/harshiv27/Desktop/shazam-cpp/fingerprint.h \
- /home/harshiv27/Desktop/shazam-cpp/mp3.h /usr/include/mpg123.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/fft.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/filter.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/fingerprint.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/mp3.h /usr/include/mpg123.h \
  /usr/include/fmt123.h /usr/include/c++/11/stdlib.h

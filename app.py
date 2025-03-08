@@ -2,8 +2,26 @@ import streamlit as st
 import tempfile
 import os
 import subprocess
+import sounddevice as sd
+import scipy.io.wavfile as wav
 
-
+def record_audio(duration=8, sample_rate=44100):
+     st.info("Recording... Speak now!")
+     
+     audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='int16')
+     sd.wait()
+ 
+     # Save to temporary WAV file
+     temp_wav = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+     wav.write(temp_wav.name, sample_rate, audio_data)
+ 
+     # Convert WAV to MP3 using ffmpeg
+     temp_mp3 = temp_wav.name.replace(".wav", ".mp3")
+     subprocess.run(["ffmpeg", "-i", temp_wav.name, "-q:a", "2", temp_mp3], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+ 
+     os.remove(temp_wav.name)  # Delete temporary WAV file
+     return temp_mp3
+     
 
 def find_song(audio_path):
     result = subprocess.run(["build/shazam", audio_path], capture_output=True, text=True)
@@ -16,32 +34,60 @@ def add_song(file_path, song_name, artist_name):
 
 
 st.title("Look-It-Up")
-st.subheader("Find songs by uploading an audio file or adding new songs to the database.")
 
 
-tab1, tab2 = st.tabs(["Upload & Match", "Add New Song"])
+tab1, tab2 = st.tabs(["Upload & Search", "Add New Song to Database"])
 
 with tab1:
-    st.subheader("Upload & Match a Song")
-    uploaded_file = st.file_uploader("Upload an MP3 file", type=["mp3"])
-    
-    if uploaded_file is not None:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_mp3:
-            temp_mp3.write(uploaded_file.read())
-            temp_mp3_path = temp_mp3.name
+    st.subheader("Record & Search a Song")
+     # Listening Animation
+    st.markdown("""
+        <style>
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px #1E90FF; }
+            50% { box-shadow: 0 0 40px #1E90FF; }
+            100% { box-shadow: 0 0 10px #1E90FF; }
+        }
+        .listening {
+            width: 100px;
+            height: 100px;
+            background-color: #1E90FF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+            margin: auto;
+        }
+        </style>
+        <div class='listening'>Listening...</div>
+    """, unsafe_allow_html=True)
+    st.write("")
+    st.write("")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("🎤 Start Recording", use_container_width=True):
+            with st.spinner("Recording... Speak now!"):
+                audio_path = record_audio()
 
-        st.success("File uploaded successfully!")
-        st.audio(temp_mp3_path, format='audio/mp3')
+            st.success("🎶 Recording complete! Searching for match...")
 
-        if st.button("Match Song"):
-            with st.spinner("Matching song..."):
-                return_code, output = find_song(temp_mp3_path)
-                if return_code == 0:
-                    st.success("Match Found!")
-                else:
-                    st.error("No match found or an error occurred.")
+            with st.spinner("🔍 Matching song..."):
+                return_code, output = find_song(audio_path)
+
+            if return_code == 0:
+                st.success("Match Found!")
                 st.write("**Match Result:**\n", output)
-                os.remove(temp_mp3_path)
+            else:
+                st.error("No match found or an error occurred.")
+
+            os.remove(audio_path)  # Cleanup temp file
+     
+     
+
+                
 
 
 

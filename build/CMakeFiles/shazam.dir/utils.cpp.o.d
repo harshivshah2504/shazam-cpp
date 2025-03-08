@@ -1,6 +1,7 @@
 CMakeFiles/shazam.dir/utils.cpp.o: \
  /home/harshiv27/Desktop/shazam-cpp/utils.cpp /usr/include/stdc-predef.h \
- /home/harshiv27/Desktop/shazam-cpp/utils.h /usr/include/c++/11/string \
+ /home/harshiv27/Desktop/shazam-cpp/header/utils.h \
+ /usr/include/c++/11/string \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
  /usr/include/features.h /usr/include/features-time64.h \

@@ -4,10 +4,10 @@
 #include <string>
 #include <iostream>
 #include <unordered_map>
-#include <fingerprint.h>
-#include <spectogram.h>
-#include <mongo.h>
-#include <mp3.h>
+#include <header/fingerprint.h>
+#include <header/spectogram.h>
+#include <header/mongo.h>
+#include <header/mp3.h>
 
 
 
@@ -45,7 +45,6 @@ bool ProcessAndSaveSong(const std::string& songFilePath, const std::string& song
             throw std::runtime_error("Failed to store fingerprints in database.");
         }
 
-        std::cout << "Fingerprint for " << songTitle << " by " << songArtist << " saved in DB successfully!" << std::endl;
         return true;
     } 
     catch (const std::exception& e) {
@@ -64,12 +63,7 @@ int main(int argc, char** argv) {
     std::string songFilePath = argv[1];  
     std::string songTitle = argv[2];    
     std::string songArtist = argv[3];   
-
-    if (ProcessAndSaveSong(songFilePath, songTitle, songArtist)) {
-        std::cout << "Song processed and saved successfully." << std::endl;
-    } else {
-        std::cout << "Failed to process and save the song." << std::endl;
-    }
+    bool done = ProcessAndSaveSong(songFilePath, songTitle, songArtist);
 
     return 0;
 }

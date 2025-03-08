@@ -5,11 +5,11 @@
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
-#include <mongo.h>
-#include <utils.h>
-#include <spectogram.h>
-#include <fingerprint.h>
-#include <mp3.h>
+#include <header/mongo.h>
+#include <header/utils.h>
+#include <header/spectogram.h>
+#include <header/fingerprint.h>
+#include <header/mp3.h>
 
 
 struct Match {
@@ -127,7 +127,7 @@ void findSongMatch(const std::string& filePath) {
         } else {
             std::cout << "\nMatches Found:\n";
             for (size_t i = 0; i < std::min(matches.size(), static_cast<size_t>(20)); ++i) {
-                std::cout << matches[i].songTitle << " by " << matches[i].songArtist<< std::endl;
+                std::cout << matches[i].songTitle << " by " << matches[i].songArtist<< "\n";
             }
 
 

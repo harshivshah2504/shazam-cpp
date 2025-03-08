@@ -1,6 +1,7 @@
 CMakeFiles/add.dir/dbclient.cpp.o: \
  /home/harshiv27/Desktop/shazam-cpp/dbclient.cpp \
- /usr/include/stdc-predef.h /home/harshiv27/Desktop/shazam-cpp/client.h \
+ /usr/include/stdc-predef.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/client.h \
  /usr/include/c++/11/string \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -163,7 +164,7 @@ CMakeFiles/add.dir/dbclient.cpp.o: \
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h \
  /usr/include/c++/11/pstl/execution_defs.h \
- /home/harshiv27/Desktop/shazam-cpp/./models.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/models.h \
  /usr/include/c++/11/complex /usr/include/c++/11/cmath \
  /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
@@ -206,7 +207,7 @@ CMakeFiles/add.dir/dbclient.cpp.o: \
  /usr/include/c++/11/bits/ostream.tcc \
  /usr/include/c++/11/bits/istream.tcc \
  /usr/include/c++/11/bits/sstream.tcc \
- /home/harshiv27/Desktop/shazam-cpp/mongo.h \
+ /home/harshiv27/Desktop/shazam-cpp/header/mongo.h \
  /usr/local/include/mongocxx/v_noabi/mongocxx/client.hpp \
  /usr/local/include/mongocxx/v_noabi/mongocxx/client-fwd.hpp \
  /usr/local/include/mongocxx/v_noabi/mongocxx/config/prelude.hpp \
