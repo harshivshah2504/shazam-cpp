@@ -128,8 +128,8 @@ add: CMakeFiles/add.dir/addSongs.cpp.o
 add: CMakeFiles/add.dir/dbclient.cpp.o
 add: CMakeFiles/add.dir/utils.cpp.o
 add: CMakeFiles/add.dir/build.make
-add: /usr/local/lib/libmongocxx.so
-add: /usr/local/lib/libbsoncxx.so
+add: /usr/local/lib/libmongocxx.so._noabi
+add: /usr/local/lib/libbsoncxx.so._noabi
 add: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.74.0
 add: CMakeFiles/add.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/workspaces/shazam-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable add"

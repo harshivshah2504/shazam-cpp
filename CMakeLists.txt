@@ -4,23 +4,35 @@ project(SeekTune)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Set paths for MongoDB C++ Driver (_noabi version)
+# Set paths for MongoDB C++ Driver
 set(CMAKE_PREFIX_PATH "/usr/local/lib/cmake/mongocxx-4.0.0;/usr/local/lib/cmake/bsoncxx-4.0.0")
 find_package(mongocxx REQUIRED)
 find_package(bsoncxx REQUIRED)
 
-set(CMAKE_INSTALL_RPATH "/usr/local/lib")
-set(CMAKE_BUILD_RPATH "/usr/local/lib")
+# Explicitly set RPATH settings
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib:/usr/local/lib")
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# Explicitly find `_noabi` libraries
-find_library(MONGOCXX_LIB mongocxx PATHS /usr/local/lib NO_DEFAULT_PATH)
-find_library(BSONCXX_LIB bsoncxx PATHS /usr/local/lib NO_DEFAULT_PATH)
+# Find the specific libraries - using the correct filename pattern
+find_library(MONGOCXX_LIB NAMES libmongocxx.so._noabi mongocxx.so._noabi PATHS /usr/local/lib /home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx NO_DEFAULT_PATH)
+find_library(BSONCXX_LIB NAMES libbsoncxx.so._noabi bsoncxx.so._noabi PATHS /usr/local/lib /home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx NO_DEFAULT_PATH)
+
+if(NOT MONGOCXX_LIB)
+    message(FATAL_ERROR "mongocxx library not found! Check if it exists at /usr/local/lib or specify the correct path.")
+endif()
+if(NOT BSONCXX_LIB)
+    message(FATAL_ERROR "bsoncxx library not found! Check if it exists at /usr/local/lib or specify the correct path.")
+endif()
+
+message(STATUS "Found mongocxx library: ${MONGOCXX_LIB}")
+message(STATUS "Found bsoncxx library: ${BSONCXX_LIB}")
 
 # Include directories
-include_directories(. /usr/local/include /usr/local/include/mongocxx /usr/local/include/bsoncxx /usr/include/eigen3)
+include_directories(. /usr/local/include /usr/local/include/mongocxx/v_noabi /usr/local/include/bsoncxx/v_noabi /usr/include/eigen3)
 
 # Link directories
-link_directories(/usr/local/lib)
+link_directories(/usr/local/lib /home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx /home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx)
 
 # Find dependencies
 find_package(Boost REQUIRED COMPONENTS system)
@@ -41,6 +53,11 @@ target_link_libraries(add
     uuid 
     mpg123
 )
+# Set RPATH for the add executable
+set_target_properties(add PROPERTIES 
+    INSTALL_RPATH "/usr/local/lib:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx"
+    BUILD_WITH_INSTALL_RPATH TRUE
+)
 
 # Define source files for `shazam` executable
 add_executable(shazam query.cpp utils.cpp)
@@ -56,4 +73,9 @@ target_link_libraries(shazam
     Boost::system
     uuid 
     mpg123
+)
+# Set RPATH for the shazam executable
+set_target_properties(shazam PROPERTIES 
+    INSTALL_RPATH "/usr/local/lib:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx"
+    BUILD_WITH_INSTALL_RPATH TRUE
 )

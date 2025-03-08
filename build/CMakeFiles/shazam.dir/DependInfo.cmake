@@ -18,8 +18,8 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../."
-  "/usr/local/include/mongocxx"
-  "/usr/local/include/bsoncxx"
+  "/usr/local/include/mongocxx/v_noabi"
+  "/usr/local/include/bsoncxx/v_noabi"
   "/usr/include/eigen3"
   )
 

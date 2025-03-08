@@ -3,27 +3,42 @@ import tempfile
 import os
 import subprocess
 
-
-import streamlit as st
-import tempfile
-import os
-import subprocess
-
 # Function to check if an executable exists
 def check_executable(path):
     return os.path.exists(path) and os.access(path, os.X_OK)
 
+# Function to create the wrapper script if it doesn't exist
+def ensure_wrapper_script():
+    wrapper_path = "run_with_libs.sh"
+    
+    # Get MongoDB URI from Streamlit secrets
+    mongo_uri = st.secrets["mongo_uri"]
+    
+    if not os.path.exists(wrapper_path):
+        with open(wrapper_path, "w") as f:
+            f.write('#!/bin/bash\n')
+            f.write('export LD_LIBRARY_PATH=/usr/local/lib:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx:$LD_LIBRARY_PATH\n')
+            f.write(f'export MONGO_URI="{mongo_uri}"\n')
+            f.write('exec "$@"')
+        os.chmod(wrapper_path, 0o755)  # Make executable
+    return wrapper_path
+
 # Function to run `./shazam` with an audio file
 def find_song(audio_path):
     shazam_exe = "build/shazam"
+    wrapper = ensure_wrapper_script()
 
     if not check_executable(shazam_exe):
         return 1, f"Error: {shazam_exe} not found or not executable!"
 
-    command = [shazam_exe, audio_path]
-    st.write(f"Running command: `{command}`")  # Debugging info
+    command = ["./" + wrapper, shazam_exe, audio_path]
+    st.write(f"Running command: `{' '.join(command)}`")  # Debugging info
 
-    result = subprocess.run(command, capture_output=True, text=True)
+    # Set environment variables for the subprocess
+    env = os.environ.copy()
+    env["MONGO_URI"] = st.secrets["mongo_uri"]
+
+    result = subprocess.run(command, capture_output=True, text=True, env=env)
 
     if result.returncode != 0:
         st.error(f"Error executing `{shazam_exe}`: {result.stderr}")
@@ -33,14 +48,19 @@ def find_song(audio_path):
 # Function to run `./add` with song details
 def add_song(file_path, song_name, artist_name):
     add_exe = "build/add"
+    wrapper = ensure_wrapper_script()
 
     if not check_executable(add_exe):
         return 1, f"Error: {add_exe} not found or not executable!"
 
-    command = [add_exe, file_path, song_name, artist_name]
-    st.write(f"Running command: `{command}`")  # Debugging info
+    command = ["./" + wrapper, add_exe, file_path, song_name, artist_name]
+    st.write(f"Running command: `{' '.join(command)}`")  # Debugging info
 
-    result = subprocess.run(command, capture_output=True, text=True)
+    # Set environment variables for the subprocess
+    env = os.environ.copy()
+    env["MONGO_URI"] = st.secrets["mongo_uri"]
+
+    result = subprocess.run(command, capture_output=True, text=True, env=env)
 
     if result.returncode != 0:
         st.error(f"Error executing `{add_exe}`: {result.stderr}")
