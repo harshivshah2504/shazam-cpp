@@ -79,3 +79,33 @@ set_target_properties(shazam PROPERTIES
     INSTALL_RPATH "/usr/local/lib:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx"
     BUILD_WITH_INSTALL_RPATH TRUE
 )
+
+# --------------------------
+# 🔹 INSTALLATION COMMANDS
+# --------------------------
+
+# Install the binaries to /usr/local/bin
+install(TARGETS add shazam
+    RUNTIME DESTINATION /usr/local/bin
+)
+
+# Install MongoDB headers
+install(DIRECTORY /usr/local/include/mongocxx
+    DESTINATION /usr/local/include
+)
+
+install(DIRECTORY /usr/local/include/bsoncxx
+    DESTINATION /usr/local/include
+)
+
+# Install shared libraries
+install(FILES
+    ${MONGOCXX_LIB}
+    ${BSONCXX_LIB}
+    DESTINATION /usr/local/lib
+)
+
+# Refresh ldconfig after install
+install(CODE "execute_process(COMMAND ldconfig)")
+
+message(STATUS "Installation setup complete. Run 'sudo make install' after build.")
