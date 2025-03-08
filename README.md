@@ -35,6 +35,7 @@ This project implements a music recognition system using an algorithm to identif
 - **TypeScript**: Minimal usage for any web-based interfaces.
 
 ## Installation
+try to use it one Linux it would be easier
 
 ### Linux/Mac
 
