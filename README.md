@@ -65,6 +65,7 @@ This project implements a music recognition system using an algorithm to identif
     ```
 
 5. **Build the project**:
+     In the shazam-cpp directory:
     ```sh
     mkdir build
     cd build
@@ -76,6 +77,7 @@ This project implements a music recognition system using an algorithm to identif
 ## Usage
 
 1. **Run the application**:
+     In the shazam-cpp directory:
     ```sh
     streamlit run app.py
     ```
