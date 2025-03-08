@@ -1,6 +1,6 @@
 # Shazam-CPP
 
-Shazam-CPP is a project aimed at creating a music recognition system similar to Shazam, implemented using C++ and related technologies.
+Shazam-CPP is a project aimed at creating a music recognition system similar to Shazam, implemented using C++.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -11,6 +11,7 @@ Shazam-CPP is a project aimed at creating a music recognition system similar to 
   - [Windows](#windows)
 - [Usage](#usage)
 - [Contributing](#contributing)
+- [Resources and References](#resources-and-references)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
 
