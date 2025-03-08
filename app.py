@@ -30,7 +30,7 @@ def ensure_wrapper_script():
 
 # Function to run `./shazam` with an audio file
 def find_song(audio_path):
-    shazam_exe = "build/shazam"
+    shazam_exe = "/usr/local/bin/shazam"
     wrapper = ensure_wrapper_script()
 
     if not check_executable(shazam_exe):
@@ -52,7 +52,7 @@ def find_song(audio_path):
 
 # Function to run `./add` with song details
 def add_song(file_path, song_name, artist_name):
-    add_exe = "build/add"
+    add_exe = "/usr/local/bin/add"
     wrapper = ensure_wrapper_script()
 
     if not check_executable(add_exe):

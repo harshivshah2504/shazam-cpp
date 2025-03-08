@@ -4,79 +4,80 @@ project(SeekTune)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Set paths for MongoDB C++ Driver
+# --------------------------
+# 🔹 MONGODB DRIVER SETTINGS
+# --------------------------
+
+# Ensure CMake finds MongoDB C++ driver
 set(CMAKE_PREFIX_PATH "/usr/local/lib/cmake/mongocxx-4.0.0;/usr/local/lib/cmake/bsoncxx-4.0.0")
+
 find_package(mongocxx REQUIRED)
 find_package(bsoncxx REQUIRED)
 
-# Explicitly set RPATH settings
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib:/usr/local/lib")
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-# Find the specific libraries - using the correct filename pattern
-find_library(MONGOCXX_LIB NAMES libmongocxx.so._noabi mongocxx.so._noabi PATHS /usr/local/lib /home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx NO_DEFAULT_PATH)
-find_library(BSONCXX_LIB NAMES libbsoncxx.so._noabi bsoncxx.so._noabi PATHS /usr/local/lib /home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx NO_DEFAULT_PATH)
-
-if(NOT MONGOCXX_LIB)
-    message(FATAL_ERROR "mongocxx library not found! Check if it exists at /usr/local/lib or specify the correct path.")
-endif()
-if(NOT BSONCXX_LIB)
-    message(FATAL_ERROR "bsoncxx library not found! Check if it exists at /usr/local/lib or specify the correct path.")
+if(NOT mongocxx_FOUND OR NOT bsoncxx_FOUND)
+    message(FATAL_ERROR "❌ MongoDB C++ driver not found! Check if installed in /usr/local/lib")
 endif()
 
-message(STATUS "Found mongocxx library: ${MONGOCXX_LIB}")
-message(STATUS "Found bsoncxx library: ${BSONCXX_LIB}")
+message(STATUS "✔ Found mongocxx: ${mongocxx_INCLUDE_DIRS}")
+message(STATUS "✔ Found bsoncxx: ${bsoncxx_INCLUDE_DIRS}")
 
-# Include directories
-include_directories(. /usr/local/include /usr/local/include/mongocxx/v_noabi /usr/local/include/bsoncxx/v_noabi /usr/include/eigen3)
+# --------------------------
+# 🔹 INCLUDE & LINK DIRECTORIES
+# --------------------------
 
-# Link directories
-link_directories(/usr/local/lib /home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx /home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx)
+include_directories(
+    ${mongocxx_INCLUDE_DIRS}
+    ${bsoncxx_INCLUDE_DIRS}
+    /usr/include/eigen3
+    ${CMAKE_SOURCE_DIR}  # Ensure local headers are included
+)
 
-# Find dependencies
+# --------------------------
+# 🔹 DEPENDENCIES
+# --------------------------
+
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(Threads REQUIRED)
 
-# Define source files for `add` executable
+# --------------------------
+# 🔹 BUILD EXECUTABLES
+# --------------------------
+
+# 🎵 ADD EXECUTABLE
+# 🎵 ADD EXECUTABLE
 add_executable(add addSongs.cpp dbclient.cpp utils.cpp)
 target_link_libraries(add 
-    sndfile 
-    ${MONGOCXX_LIB} 
-    ${BSONCXX_LIB} 
-    avformat 
-    avcodec 
-    avutil 
-    swresample 
+    PRIVATE
+    mongocxx  # 🔥 Use this instead of mongocxx_shared
+    bsoncxx   # 🔥 Use this instead of bsoncxx_shared
+    sndfile
+    avformat avcodec avutil swresample
     Threads::Threads
     Boost::system
-    uuid 
-    mpg123
+    uuid mpg123
 )
-# Set RPATH for the add executable
+
 set_target_properties(add PROPERTIES 
-    INSTALL_RPATH "/usr/local/lib:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx"
+    INSTALL_RPATH "/usr/local/lib"
     BUILD_WITH_INSTALL_RPATH TRUE
 )
 
-# Define source files for `shazam` executable
+
+# 🎵 SHAZAM EXECUTABLE
 add_executable(shazam query.cpp utils.cpp)
 target_link_libraries(shazam 
-    sndfile 
-    ${MONGOCXX_LIB} 
-    ${BSONCXX_LIB} 
-    avformat 
-    avcodec 
-    avutil 
-    swresample 
+    PRIVATE
+    mongocxx  # 🔥 Use this instead of mongocxx_shared
+    bsoncxx   # 🔥 Use this instead of bsoncxx_shared
+    sndfile
+    avformat avcodec avutil swresample
     Threads::Threads
     Boost::system
-    uuid 
-    mpg123
+    uuid mpg123
 )
-# Set RPATH for the shazam executable
+
 set_target_properties(shazam PROPERTIES 
-    INSTALL_RPATH "/usr/local/lib:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/mongocxx:/home/vscode/mongo-driver/mongo-cxx-driver/build/src/bsoncxx"
+    INSTALL_RPATH "/usr/local/lib"
     BUILD_WITH_INSTALL_RPATH TRUE
 )
 
@@ -84,28 +85,24 @@ set_target_properties(shazam PROPERTIES
 # 🔹 INSTALLATION COMMANDS
 # --------------------------
 
-# Install the binaries to /usr/local/bin
+# Install binaries
 install(TARGETS add shazam
     RUNTIME DESTINATION /usr/local/bin
 )
 
 # Install MongoDB headers
-install(DIRECTORY /usr/local/include/mongocxx
+install(DIRECTORY /usr/local/include/mongocxx /usr/local/include/bsoncxx
     DESTINATION /usr/local/include
 )
 
-install(DIRECTORY /usr/local/include/bsoncxx
-    DESTINATION /usr/local/include
-)
-
-# Install shared libraries
+# Install MongoDB shared libraries
 install(FILES
-    ${MONGOCXX_LIB}
-    ${BSONCXX_LIB}
+    /usr/local/lib/libmongocxx.so
+    /usr/local/lib/libbsoncxx.so
     DESTINATION /usr/local/lib
 )
 
-# Refresh ldconfig after install
+# Run ldconfig to refresh shared library cache
 install(CODE "execute_process(COMMAND ldconfig)")
 
-message(STATUS "Installation setup complete. Run 'sudo make install' after build.")
+message(STATUS "✔ Installation setup complete. Run 'sudo make install' after build.")

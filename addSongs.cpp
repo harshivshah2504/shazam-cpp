@@ -10,7 +10,6 @@
 
 
 
-
 // Function to process and save the song in the database
 bool ProcessAndSaveSong(const std::string& songFilePath, const std::string& songTitle, const std::string& songArtist) {
     try {

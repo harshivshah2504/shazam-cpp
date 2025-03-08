@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_SYSTEM_DYN_LINK
 
-CXX_INCLUDES = -I/workspaces/shazam-cpp/. -I/usr/local/include/mongocxx/v_noabi -I/usr/local/include/bsoncxx/v_noabi -I/usr/include/eigen3
+CXX_INCLUDES = -I/usr/include/eigen3 -I/workspaces/shazam-cpp
 
 CXX_FLAGS = -std=gnu++17
 

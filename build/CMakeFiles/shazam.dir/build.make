@@ -113,8 +113,6 @@ shazam_EXTERNAL_OBJECTS =
 shazam: CMakeFiles/shazam.dir/query.cpp.o
 shazam: CMakeFiles/shazam.dir/utils.cpp.o
 shazam: CMakeFiles/shazam.dir/build.make
-shazam: /usr/local/lib/libmongocxx.so._noabi
-shazam: /usr/local/lib/libbsoncxx.so._noabi
 shazam: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.74.0
 shazam: CMakeFiles/shazam.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/workspaces/shazam-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable shazam"
