@@ -19,4 +19,3 @@ libpthread-stubs0-dev
 uuid-dev
 libqt5multimedia5-plugins
 libqt5multimediawidgets5
-MONGO_URI=mongodb+srv://shazam-cpp:yourpassword@shazam-cpp.5m8ot.mongodb.net/?retryWrites=true&w=majority
