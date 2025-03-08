@@ -1,2 +1,0 @@
-[phases.setup]
-nixPkgs = ["gcc", "cmake", "mongo-c-driver", "mongo-cxx-driver", "ffmpeg", "boost", "mpg123", "libsndfile"]
