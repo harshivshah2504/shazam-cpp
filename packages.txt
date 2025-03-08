@@ -1,12 +1,14 @@
 build-essential
 cmake
 clang
-clang++ 
 portaudio19-dev
 libboost-all-dev
 libeigen3-dev
-libmongocxx-dev
-libbsoncxx-dev
+libssl-dev
+libmongoc-1.0-0
+libmongoc-dev
+libbson-1.0-0
+libbson-dev
 libavformat-dev
 libavcodec-dev
 libavutil-dev
