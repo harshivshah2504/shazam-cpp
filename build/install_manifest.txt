@@ -1,0 +1,2 @@
+/usr/local/bin/add
+/usr/local/bin/shazam

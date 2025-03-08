@@ -5,3 +5,4 @@ pandas
 streamlit
 requests
 pydub
+pymongo

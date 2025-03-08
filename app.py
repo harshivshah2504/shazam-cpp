@@ -4,6 +4,33 @@ import os
 import subprocess
 import sounddevice as sd
 import scipy.io.wavfile as wav
+import pandas as pd
+from pymongo import MongoClient
+
+
+def fetch_songs():
+    try:
+        client = MongoClient("mongodb://localhost:27017")  # Modify if needed
+        db = client["song-recognition"]
+        collection = db["songs"]
+
+        songs = list(collection.find({}))  # Retrieve all songs
+        
+        song_list = []
+        for song in songs:
+            song_id = song.get("_id", "N/A")
+            key = song.get("key", "Unknown")
+
+            # Extract title & artist from "key" (format: "Title---Artist")
+            title, artist = key.split("---") if "---" in key else (key, "Unknown")
+
+            song_list.append({"ID": song_id, "Title": title, "Artist": artist})
+
+        return song_list
+    except Exception as e:
+        st.error(f"Error fetching songs: {e}")
+        return []
+
 
 def record_audio(duration=8, sample_rate=44100):
      st.info("Recording... Speak now!")
@@ -36,7 +63,7 @@ def add_song(file_path, song_name, artist_name):
 st.title("Look-It-Up")
 
 
-tab1, tab2 = st.tabs(["Upload & Search", "Add New Song to Database"])
+tab1, tab2, tab3 = st.tabs(["Upload & Search", "Add New Song to Database","View Database"])
 
 with tab1:
     st.subheader("Record & Search a Song")
@@ -72,9 +99,9 @@ with tab1:
             with st.spinner("Recording... Speak now!"):
                 audio_path = record_audio()
 
-            st.success("🎶 Recording complete! Searching for match...")
+            st.success("Recording complete! Searching for match...")
 
-            with st.spinner("🔍 Matching song..."):
+            with st.spinner("Matching song..."):
                 return_code, output = find_song(audio_path)
 
             if return_code == 0:
@@ -111,3 +138,16 @@ with tab2:
                     st.error("Failed to add song.")
                 st.text(output)
                 os.remove(temp_song_path)  
+
+
+with tab3:
+    st.subheader("Songs in Database")
+    with st.spinner("Fetching songs..."):
+            song_data = fetch_songs()
+
+            if song_data:
+                df = pd.DataFrame(song_data)
+                st.dataframe(df.set_index("ID"), use_container_width=True)
+            else:
+                st.info("No songs found in the database.")
+        
