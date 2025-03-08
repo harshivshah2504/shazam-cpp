@@ -36,7 +36,7 @@ def find_song(audio_path):
 
     # Set environment variables for the subprocess
     env = os.environ.copy()
-    env["MONGO_URI"] = st.secrets["mongo_uri"]
+    env["MONGO_URI"] = st.secrets["MONGO_URI"]
 
     result = subprocess.run(command, capture_output=True, text=True, env=env)
 
@@ -58,7 +58,7 @@ def add_song(file_path, song_name, artist_name):
 
     # Set environment variables for the subprocess
     env = os.environ.copy()
-    env["MONGO_URI"] = st.secrets["mongo_uri"]
+    env["MONGO_URI"] = st.secrets["MONGO_URI"]
 
     result = subprocess.run(command, capture_output=True, text=True, env=env)
 
