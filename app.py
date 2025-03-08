@@ -10,18 +10,16 @@ from pymongo import MongoClient
 
 def fetch_songs():
     try:
-        client = MongoClient("mongodb://localhost:27017")  # Modify if needed
+        client = MongoClient("mongodb://localhost:27017")  
         db = client["song-recognition"]
         collection = db["songs"]
 
-        songs = list(collection.find({}))  # Retrieve all songs
+        songs = list(collection.find({}))  
         
         song_list = []
         for song in songs:
             song_id = song.get("_id", "N/A")
             key = song.get("key", "Unknown")
-
-            # Extract title & artist from "key" (format: "Title---Artist")
             title, artist = key.split("---") if "---" in key else (key, "Unknown")
 
             song_list.append({"ID": song_id, "Title": title, "Artist": artist})
@@ -37,16 +35,12 @@ def record_audio(duration=8, sample_rate=44100):
      
      audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='int16')
      sd.wait()
- 
-     # Save to temporary WAV file
      temp_wav = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
      wav.write(temp_wav.name, sample_rate, audio_data)
- 
-     # Convert WAV to MP3 using ffmpeg
      temp_mp3 = temp_wav.name.replace(".wav", ".mp3")
      subprocess.run(["ffmpeg", "-i", temp_wav.name, "-q:a", "2", temp_mp3], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
  
-     os.remove(temp_wav.name)  # Delete temporary WAV file
+     os.remove(temp_wav.name) 
      return temp_mp3
      
 
@@ -67,7 +61,6 @@ tab1, tab2, tab3 = st.tabs(["Upload & Search", "Add New Song to Database","View 
 
 with tab1:
     st.subheader("Record & Search a Song")
-     # Listening Animation
     st.markdown("""
         <style>
         @keyframes pulse {
@@ -110,8 +103,7 @@ with tab1:
             else:
                 st.error("No match found or an error occurred.")
 
-            os.remove(audio_path)  # Cleanup temp file
-     
+            os.remove(audio_path)       
      
 
                 
