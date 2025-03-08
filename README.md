@@ -17,7 +17,7 @@ Shazam-CPP is a project aimed at creating a music recognition system similar to 
 
 ## Overview
 
-This project implements a music recognition system using an algorithm to identify songs from audio samples.
+This project implements a music recognition system using an algorithm to identify songs from audio samples. (NOT ML Algorithm)
 
 ## Features
 
@@ -67,6 +67,7 @@ This project implements a music recognition system using an algorithm to identif
 5. **Build the project**:
      In the shazam-cpp directory:
     ```sh
+    pip install -r requirements.txt
     mkdir build
     cd build
     cmake -DCMAKE_TOOLCHAIN_FILE=~/vcpkg/scripts/buildsystems/vcpkg.cmake ..
