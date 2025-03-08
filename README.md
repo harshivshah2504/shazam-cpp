@@ -51,7 +51,7 @@ This project implements a music recognition system using an algorithm to identif
 
 1. **Run the application**:
     ```sh
-    ./shazam-cpp
+    streamlit run app.py
     ```
 
 2. **Provide an audio sample**: Follow the on-screen instructions to provide an audio sample for recognition.
@@ -70,6 +70,13 @@ Contributions are welcome! Please follow these steps:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Resources and References
+https://github.com/cgzirim/seek-tune/tree/main
+https://drive.google.com/file/d/1ahyCTXBAZiuni6RTzHzLoOwwfTRFaU-C/view
+https://hajim.rochester.edu/ece/sites/zduan/teaching/ece472/projects/2019/AudioFingerprinting.pdf
+https://www.toptal.com/algorithms/shazam-it-music-processing-fingerprinting-and-recognition
+
 
 ## Acknowledgements
 
