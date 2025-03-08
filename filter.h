@@ -6,11 +6,10 @@ using namespace std;
 
 class LowPassFilter {
 private:
-    double alpha; // Filter coefficient
-    double yPrev; // Previous output value
-
+    double alpha; 
+    double yPrev;
 public:
-    // Constructor to initialize the low-pass filter
+
     LowPassFilter(double cutoffFrequency, double sampleRate) {
         double rc = 1.0 / (2 * M_PI * cutoffFrequency);
         double dt = 1.0 / sampleRate;
@@ -18,7 +17,7 @@ public:
         yPrev = 0;
     }
 
-    // Filter function to process the input signal
+
     vector<double> filter(const vector<double>& input) {
         vector<double> filtered(input.size());
         for (size_t i = 0; i < input.size(); i++) {

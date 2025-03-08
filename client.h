@@ -10,13 +10,13 @@
 #include <cstdint>
 #include "./models.h"
 
-// Song struct to match the Go implementation
+
 struct Song {
     std::string title;
     std::string artist;
 };
 
-// DBClient interface that mimics the Go interface
+
 class DBClient {
 public:
     virtual ~DBClient() = default;
@@ -39,7 +39,7 @@ public:
     virtual bool DeleteCollection(const std::string& collectionName) = 0;
 };
 
-// Factory function to create the appropriate DB client
+
 std::unique_ptr<DBClient> NewDBClient();
 
-#endif // DB_CLIENT_H
+#endif 

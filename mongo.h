@@ -12,10 +12,6 @@
 #include <vector>
 #include <map>
 #include <optional>
-#include <cstdlib>  
-#include <utils.h>
-
-
 
 
 
@@ -26,46 +22,32 @@ private:
     mongocxx::database db;
     bool connected;
     
-    // Singleton instance for MongoDB client
+
     static mongocxx::instance& getInstance() {
-        static mongocxx::instance instance{}; // This initializes the MongoDB driver
+        static mongocxx::instance instance{}; 
         return instance;
     }
     
 public:
-        MongoClient(const std::string& uri) : connected(false), client(mongocxx::uri(uri)) {
-            getInstance();
-
-            try {
-                db = client["SeekTuneDB"];  // Replace with your actual database name
-                connected = true;
-            } catch (const std::exception& e) {
-                std::cerr << "Error connecting to MongoDB Atlas: " << e.what() << std::endl;
-            }
-        }
-
+    MongoClient(const std::string& uri) : connected(false) {
+        getInstance();
+    }
     
-        bool Connect() override {
-            try {
-                std::string uriString = getConnectionUri();
-                if (uriString.empty()) return false;
-        
-                mongocxx::uri uri(uriString);
-                client = mongocxx::client(uri);
-                db = client["SeekTuneDB"]; 
-                connected = true;
-        
-                std::cout << "Connected to MongoDB Atlas Successfully!" << std::endl;
-                return true;
-            } catch (const std::exception& e) {
-                std::cerr << "Error connecting to MongoDB Atlas: " << e.what() << std::endl;
-                return false;
-            }
+    bool Connect() override {
+        try {
+            mongocxx::uri uri(getConnectionUri());
+            client = mongocxx::client(uri);
+            db = client["song-recognition"];
+            connected = true;
+            return true;
+        } catch (const std::exception& e) {
+            std::cerr << "Error connecting to MongoDB: " << e.what() << std::endl;
+            return false;
         }
-        
+    }
     
     void Disconnect() override {
-        // The MongoDB C++ driver handles disconnection in the destructor
+
         connected = false;
     }
     
@@ -159,16 +141,15 @@ public:
         try {
             auto collection = db["songs"];
             
-            // Create an index on the "key" field to ensure it is unique
             bsoncxx::builder::stream::document index_builder;
-            index_builder << "key" << 1;  // Create an index on the "key" field
+            index_builder << "key" << 1;  
             bsoncxx::document::view_or_value index_doc{index_builder.view()};
             mongocxx::options::index index_options;
-            index_options.unique(true);  // Ensure uniqueness for the "key" field
+            index_options.unique(true);  
             collection.create_index(index_doc, index_options);
             auto result = collection.find_one({}, mongocxx::options::find{}
             .sort(bsoncxx::builder::stream::document{} << "_id" << -1 << bsoncxx::builder::stream::finalize));
-            int32_t songID = 1;  // Default value
+            int32_t songID = 1;  
                     if (result) {
                         auto doc = result->view();
                         if (doc["_id"].type() == bsoncxx::type::k_int32) {
@@ -179,7 +160,6 @@ public:
                     }
             std::string key = generateSongKey(songTitle, songArtist);
 
-            // Insert the song document with the unique ID and key
             bsoncxx::builder::stream::document doc_builder;
             std::cout << "SongID: " << songID << std::endl;
             std::cout << "key: " << key << std::endl;
@@ -191,8 +171,7 @@ public:
 
         } catch (const mongocxx::exception& e) {
             std::cerr << "Error registering song: " << e.what() << std::endl;
-            // Check for duplicate key error
-            if (e.code().value() == 11000) {  // MongoDB duplicate key error code
+            if (e.code().value() == 11000) { 
                 std::cerr << "Duplicate entry detected for key: " << generateSongKey(songTitle, songArtist) << std::endl;
             }
             return 0;
@@ -217,16 +196,14 @@ public:
             
             if (filterKey == "_id") {
                 try {
-                    filter_builder << filterKey << std::stoi(value);  // Attempt to convert value to an integer
+                    filter_builder << filterKey << std::stoi(value);  
                 } catch (const std::invalid_argument& e) {
                     std::cerr << "Invalid argument: " << value << " is not a valid integer." << std::endl;
-                    // Handle the error or set a default value if needed
                 } catch (const std::out_of_range& e) {
                     std::cerr << "Out of range: " << value << " is too large for an integer." << std::endl;
-                    // Handle the error or set a default value if needed
                 }
             } else {
-                filter_builder << filterKey << value;  // Proceed as usual for other filter keys
+                filter_builder << filterKey << value; 
             }
 
             
@@ -234,20 +211,17 @@ public:
             if (doc) {
                 auto doc_view = doc->view();
 
-                // Ensure the fields exist before accessing them
                 bsoncxx::document::element key_elem = doc_view["key"];
 
                 if (key_elem && key_elem.type() == bsoncxx::type::k_string) {
                     
-                    // Retrieve string values correctly using bsoncxx::string::to_string
                     std::string key = bsoncxx::string::to_string(key_elem.get_string().value);
 
-                    // Parse the key to get title and artist
                     size_t separatorPos = key.find("---");
                     std::string title = (separatorPos != std::string::npos) ? key.substr(0, separatorPos) : key;
                     std::string artist = (separatorPos != std::string::npos) ? key.substr(separatorPos + 3) : "";
 
-                    return Song{title, artist};  // Construct and return the Song object
+                    return Song{title, artist};  
                 }
             }
 
@@ -300,19 +274,27 @@ public:
     
 private:
     std::string getConnectionUri() {
-        std::string mongoUri = getEnv("MONGO_URI", "");
+        // Get environment variables for MongoDB connection
+        std::string dbUsername = getEnv("DB_USER", "");
+        std::string dbPassword = getEnv("DB_PASS", "");
+        std::string dbName = getEnv("DB_NAME", "");
+        std::string dbHost = getEnv("DB_HOST", "");
+        std::string dbPort = getEnv("DB_PORT", "");
         
-        if (mongoUri.empty()) {
-            std::cerr << "Error: MONGO_URI environment variable is not set!" << std::endl;
-            return "";
+        if (dbUsername.empty() || dbPassword.empty()) {
+            return "mongodb://localhost:27017";
         }
         
-        return mongoUri;
+        return "mongodb://" + dbUsername + ":" + dbPassword + "@" + 
+               dbHost + ":" + dbPort + "/" + dbName;
     }
-
+    
+    std::string getEnv(const std::string& key, const std::string& defaultValue = "") {
+        const char* value = std::getenv(key.c_str());
+        return value ? value : defaultValue;
+    }
     
     uint32_t generateUniqueID() {
-        // Simple implementation - in production, use a more robust method
         return static_cast<uint32_t>(std::hash<std::string>{}(
             std::to_string(std::chrono::system_clock::now().time_since_epoch().count())));
     }
@@ -322,4 +304,4 @@ private:
     }
 };
 
-#endif // MONGO_DB_CLIENT_H
+#endif 

@@ -1,3 +1,4 @@
+#include <audiorw.hpp>
 #include <filesystem>
 #include <vector>
 #include <string>
@@ -10,32 +11,25 @@
 
 
 
-// Function to process and save the song in the database
 bool ProcessAndSaveSong(const std::string& songFilePath, const std::string& songTitle, const std::string& songArtist) {
     try {
-        // Step 1: Initialize the database client
         std::unique_ptr<DBClient> db = NewDBClient(); 
         if (!db->Connect()) {
             throw std::runtime_error("Database connection failed.");
         }
 
-        // Step 3: Convert WAV bytes to float64 samples
         auto [samples, sampleRate, channels, duration] = decodeMP3ToFloat(songFilePath);
         if (samples.empty()) {
             throw std::runtime_error("Error converting MP3 bytes to samples.");
         }
 
-        // Step 4: Create spectrogram from audio samples
-        auto spectrogram = Spectrogram(samples, sampleRate); // Implement spectrogram function
+        auto spectrogram = Spectrogram(samples, sampleRate); 
         if (spectrogram.empty()) {
             throw std::runtime_error("Error creating spectrogram.");
         }
 
-        // Step 5: Register song in database and get song ID
         uint32_t songID = db->RegisterSong(songTitle, songArtist);
-
-        // Step 6: Extract peaks from spectrogram
-        std::vector<Peak> peaks = ExtractPeaks(spectrogram, duration); // Implement peak extraction
+        std::vector<Peak> peaks = ExtractPeaks(spectrogram, duration); 
         if (peaks.empty()) {
             throw std::runtime_error("No peaks found in spectrogram.");
         }
@@ -45,17 +39,16 @@ bool ProcessAndSaveSong(const std::string& songFilePath, const std::string& song
             throw std::runtime_error("Failed to generate fingerprints.");
         }
 
-        // Step 8: Store fingerprints in the database
         bool success = db->StoreFingerprints(fingerprints);
         if (!success) {
             db->DeleteSongByID(songID);  
             throw std::runtime_error("Failed to store fingerprints in database.");
         }
 
-        // Print success message
         std::cout << "Fingerprint for " << songTitle << " by " << songArtist << " saved in DB successfully!" << std::endl;
         return true;
-    } catch (const std::exception& e) {
+    } 
+    catch (const std::exception& e) {
         std::cerr << "Error processing song: " << e.what() << std::endl;
         return false;
     }
@@ -68,12 +61,10 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // Get the command-line arguments
-    std::string songFilePath = argv[1];  // Path to the WAV file
-    std::string songTitle = argv[2];     // Song title
-    std::string songArtist = argv[3];    // Song artist    
+    std::string songFilePath = argv[1];  
+    std::string songTitle = argv[2];    
+    std::string songArtist = argv[3];   
 
-    // Call the function to process and save the song
     if (ProcessAndSaveSong(songFilePath, songTitle, songArtist)) {
         std::cout << "Song processed and saved successfully." << std::endl;
     } else {

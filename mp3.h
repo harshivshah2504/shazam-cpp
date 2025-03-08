@@ -3,31 +3,31 @@
 #include <tuple>
 #include <mpg123.h>
 
-#define BUFFER_SIZE 8192  // Buffer size for decoding
-#define TARGET_SAMPLE_RATE 48000  // Force output sample rate to 48kHz
+#define BUFFER_SIZE 8192  
+#define TARGET_SAMPLE_RATE 48000
 
-// Function to decode MP3 and return samples, sample rate, channels, and duration
+
 std::tuple<std::vector<double>, long, int, double> decodeMP3ToFloat(const std::string& mp3FilePath) {
     std::vector<double> floatSamples;
     long sampleRate = 0;
     int channels = 0;
     double duration = 0.0;
 
-    // Initialize mpg123
+
     mpg123_init();
     mpg123_handle* mh = mpg123_new(NULL, NULL);
     if (mpg123_open(mh, mp3FilePath.c_str()) != MPG123_OK) {
         std::cerr << "Error opening MP3 file: " << mp3FilePath << std::endl;
-        return {floatSamples, sampleRate, channels, duration};  // Return empty result
+        return {floatSamples, sampleRate, channels, duration}; 
     }
 
     int encoding;
     
-    // Force decoding to 48000 Hz, Stereo, 16-bit PCM
+
     mpg123_format_none(mh);
     mpg123_format(mh, TARGET_SAMPLE_RATE, MPG123_STEREO, MPG123_ENC_SIGNED_16);
 
-    // Get the actual format
+
     mpg123_getformat(mh, &sampleRate, &channels, &encoding);
 
     if (encoding != MPG123_ENC_SIGNED_16) {
@@ -38,8 +38,7 @@ std::tuple<std::vector<double>, long, int, double> decodeMP3ToFloat(const std::s
         return {floatSamples, sampleRate, channels, duration};
     }
 
-    // Get total length in samples
-    mpg123_scan(mh);  // Ensure we can retrieve length
+    mpg123_scan(mh);  
     off_t totalFrames = mpg123_length(mh);
 
     if (totalFrames > 0 && sampleRate > 0) {
@@ -49,15 +48,15 @@ std::tuple<std::vector<double>, long, int, double> decodeMP3ToFloat(const std::s
     std::vector<unsigned char> buffer(BUFFER_SIZE);
     size_t done;
 
-    // Read MP3 and convert samples
+
     while (mpg123_read(mh, buffer.data(), BUFFER_SIZE, &done) == MPG123_OK) {
-        for (size_t i = 0; i < done; i += 2) { // Assuming 16-bit PCM
+        for (size_t i = 0; i < done; i += 2) { 
             int16_t sample = buffer[i] | (buffer[i + 1] << 8);
-            floatSamples.push_back(sample / 32768.0); // Normalize to -1.0 to 1.0
+            floatSamples.push_back(sample / 32768.0); 
         }
     }
 
-    // Cleanup
+
     mpg123_close(mh);
     mpg123_delete(mh);
     mpg123_exit();

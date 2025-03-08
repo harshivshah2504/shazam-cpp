@@ -8,7 +8,7 @@
 
 namespace fs = std::filesystem;
 
-// Function Declarations (Only declare here, no function bodies)
+
 std::string getEnv(const std::string& key, const std::string& defaultValue = "");
 bool DeleteFile(const std::string& filePath);
 bool CreateFolder(const std::string& folderPath);
@@ -19,4 +19,4 @@ std::string GetEnv(const std::string& key, const std::string& fallback = "");
 std::string GetTimestamp();
 std::vector<float> ProcessRecording(const std::vector<uint8_t>& audioData, int sampleRate, int channels, int sampleSize, bool saveRecording);
 
-#endif  // UTILS_H
+#endif  

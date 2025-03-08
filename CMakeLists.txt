@@ -48,8 +48,8 @@ find_package(Threads REQUIRED)
 add_executable(add addSongs.cpp dbclient.cpp utils.cpp)
 target_link_libraries(add 
     PRIVATE
-    mongocxx  # 🔥 Use this instead of mongocxx_shared
-    bsoncxx   # 🔥 Use this instead of bsoncxx_shared
+    mongocxx  # Use this instead of mongocxx_shared
+    bsoncxx   # Use this instead of bsoncxx_shared
     sndfile
     avformat avcodec avutil swresample
     Threads::Threads
@@ -67,8 +67,8 @@ set_target_properties(add PROPERTIES
 add_executable(shazam query.cpp utils.cpp)
 target_link_libraries(shazam 
     PRIVATE
-    mongocxx  # 🔥 Use this instead of mongocxx_shared
-    bsoncxx   # 🔥 Use this instead of bsoncxx_shared
+    mongocxx  # Use this instead of mongocxx_shared
+    bsoncxx   # Use this instead of bsoncxx_shared
     sndfile
     avformat avcodec avutil swresample
     Threads::Threads

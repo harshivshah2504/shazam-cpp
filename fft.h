@@ -2,12 +2,11 @@
 #include <vector>
 #include <complex>
 #include <cmath>
-#include <future>  // For multithreading
 
 using namespace std;
 using Complex = complex<double>;
 
-// Recursive FFT function with multithreading
+
 vector<Complex> recursiveFFT(vector<Complex>& input) {
     int N = input.size();
     if (N <= 1) return input;
@@ -31,7 +30,7 @@ vector<Complex> recursiveFFT(vector<Complex>& input) {
     return fftResult;
 }
 
-// Wrapper function to convert real input to complex
+
 vector<Complex> FFT(const vector<double>& input) {
     vector<Complex> complexInput(input.begin(), input.end());
     return recursiveFFT(complexInput);

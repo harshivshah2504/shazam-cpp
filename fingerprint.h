@@ -16,19 +16,19 @@ const int targetZoneSize = 5;
 
 
 
-// Function to create an address from anchor and target peaks
+
 uint32_t createAddress(const Peak& anchor, const Peak& target) {
     int anchorFreq = static_cast<int>((anchor.freq.real()));
     int targetFreq = static_cast<int>((target.freq.real()));
     uint32_t deltaMs = static_cast<uint32_t>((target.time - anchor.time) * 1000);
 
-    // Bitwise combination of anchor frequency, target frequency, and delta time
+
     return (static_cast<uint32_t>(anchorFreq) << (maxDeltaBits + maxfreqBits)) |
            (static_cast<uint32_t>(targetFreq) << maxDeltaBits) |
            deltaMs;
 }
 
-// Function to generate fingerprints
+
 std::unordered_map<uint32_t, Couple> Fingerprint(const std::vector<Peak>& peaks, uint32_t songID){
     std::unordered_map<uint32_t, Couple> fingerprints;
     
