@@ -4,15 +4,39 @@ import os
 import subprocess
 
 
-# Function to build the C++ project using CMake
-def build_cpp_project():
-    if not os.path.exists("build"):
-        os.makedirs("build")
-    subprocess.run(["cmake", ".."], cwd="build", check=True)
-    subprocess.run(["make"], cwd="build", check=True)
+import subprocess
+import os
+import streamlit as st
 
-# Run the build function before using C++ executables
-build_cpp_project()
+# Get the absolute path of the project directory
+PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
+BUILD_DIR = os.path.join(PROJECT_DIR, "build")
+
+def build_cpp_project():
+    if not os.path.exists(BUILD_DIR):
+        os.makedirs(BUILD_DIR)
+
+    try:
+        # Run CMake
+        result = subprocess.run(["cmake", ".."], cwd=BUILD_DIR, check=True, capture_output=True, text=True)
+        st.text(result.stdout)  # Show CMake output
+
+        # Run Make
+        result = subprocess.run(["make"], cwd=BUILD_DIR, check=True, capture_output=True, text=True)
+        st.text(result.stdout)  # Show Make output
+
+    except subprocess.CalledProcessError as e:
+        st.error(f"Build failed! Error:\n{e.stderr}")
+        return False  # Indicate failure
+
+    return True  # Indicate success
+
+# Run before using C++ executables
+if build_cpp_project():
+    st.success("✅ C++ Build Successful!")
+else:
+    st.error("❌ C++ Build Failed. Check logs.")
+
 
 
 # Function to run `./shazam` with an audio file
