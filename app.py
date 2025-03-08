@@ -3,14 +3,26 @@ import tempfile
 import os
 import subprocess
 
+
+# Function to build the C++ project using CMake
+def build_cpp_project():
+    if not os.path.exists("build"):
+        os.makedirs("build")
+    subprocess.run(["cmake", ".."], cwd="build", check=True)
+    subprocess.run(["make"], cwd="build", check=True)
+
+# Run the build function before using C++ executables
+build_cpp_project()
+
+
 # Function to run `./shazam` with an audio file
 def find_song(audio_path):
-    result = subprocess.run(["./shazam", audio_path], capture_output=True, text=True)
+    result = subprocess.run(["build/shazam", audio_path], capture_output=True, text=True)
     return result.returncode, result.stdout  
 
 # Function to run `./add` with song details
 def add_song(file_path, song_name, artist_name):
-    result = subprocess.run(["./add", file_path, song_name, artist_name], capture_output=True, text=True)
+    result = subprocess.run(["build/add", file_path, song_name, artist_name], capture_output=True, text=True)
     return result.returncode, result.stdout 
 
 # Streamlit UI
