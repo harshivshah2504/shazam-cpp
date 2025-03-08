@@ -14,7 +14,7 @@ Shazam-CPP is a project aimed at creating a music recognition system similar to 
 
 ## Overview
 
-This project implements a music recognition system using an algorithm to identify songs from audio samples. The core logic is written in C++, with additional scripts and configurations in Makefile, CMake, Python, and TypeScript.
+This project implements a music recognition system using an algorithm to identify songs from audio samples (NOT ML).
 
 ## Features
 
@@ -25,11 +25,9 @@ This project implements a music recognition system using an algorithm to identif
 ## Technologies Used
 
 - **C++**: Main language for implementing the core logic.
-- **C**: Utilized for certain performance-critical sections.
 - **Makefile**: For automating the build process.
 - **CMake**: For managing the build configuration.
-- **Python**: Scripts for data preprocessing and analysis.
-- **TypeScript**: Minimal usage for any web-based interfaces.
+- **Python**: For UI 
 
 ## Installation
 
