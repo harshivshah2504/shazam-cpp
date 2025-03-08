@@ -34,9 +34,7 @@ This project implements a music recognition system using an algorithm to identif
 - **Python**: For webinterface.
 
 ## Installation
-- Try to use it on Linux it would be a lot easier!!
-
-### Linux/Mac
+- Currently suppots only linux/Mac
 
 1. **Clone the repository**:
     ```sh
@@ -58,8 +56,15 @@ This project implements a music recognition system using an algorithm to identif
     ```sh
     vcpkg install mongo-cxx-driver boost-system boost-filesystem boost-thread
     ```
+4. **Some Changes**:
+    ```sh
+    sudo mv /usr/local/include/mongocxx/v_noabi/mongocxx/* /usr/local/include/mongocxx/
+    sudo mv /usr/local/include/bsoncxx/v_noabi/bsoncxx/* /usr/local/include/bsoncxx/
+    sudo rm -rf /usr/local/include/mongocxx/v_noabi
+    sudo rm -rf /usr/local/include/bsoncxx/v_noabi
+    ```
 
-4. **Build the project**:
+5. **Build the project**:
     ```sh
     mkdir build
     cd build
@@ -67,36 +72,6 @@ This project implements a music recognition system using an algorithm to identif
     make -j$(nproc)
     ```
 
-### Windows
-
-1. **Clone the repository**:
-    ```sh
-    git clone https://github.com/harshivshah2504/shazam-cpp.git
-    cd shazam-cpp
-    ```
-
-2. **Install vcpkg**:
-    ```powershell
-    git clone https://github.com/microsoft/vcpkg.git C:/vcpkg
-    cd C:/vcpkg
-    .\bootstrap-vcpkg.bat
-    ```
-
-3. **Add vcpkg to System Path**:
-
-4. **Install Required Libraries**:
-    ```powershell
-    vcpkg install mongo-cxx-driver:x64-windows
-    vcpkg install boost-system boost-filesystem boost-thread:x64-windows
-    ```
-
-5. **Build the project**:
-    ```powershell
-    mkdir build
-    cd build
-    cmake -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ..
-    cmake --build . --config Release
-    ```
 
 ## Usage
 
@@ -104,8 +79,6 @@ This project implements a music recognition system using an algorithm to identif
     ```sh
     streamlit run app.py
     ```
-
-2. **Provide an audio sample**: Follow the on-screen instructions to provide an audio sample for recognition.
 
 ## Contributing
 
