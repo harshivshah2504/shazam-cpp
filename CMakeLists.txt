@@ -4,6 +4,11 @@ project(SeekTune)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_PREFIX_PATH "/usr/local/lib/cmake/mongocxx-4.0.0;/usr/local/lib/cmake/bsoncxx-4.0.0")
+find_package(mongocxx REQUIRED)
+find_package(bsoncxx REQUIRED)
+
+
 # Include directories
 include_directories(. /usr/local/include /usr/local/include/mongocxx /usr/local/include/bsoncxx /usr/include/eigen3)
 
@@ -20,14 +25,10 @@ if(NOT Boost_FOUND)
 endif()
 include_directories(${Boost_INCLUDE_DIRS})
 
-# Find MongoDB C++ Driver
-find_package(mongocxx REQUIRED)
-find_package(bsoncxx REQUIRED)
 
 # Define source files for `add` executable
 add_executable(add addSongs.cpp dbclient.cpp utils.cpp)
 target_link_libraries(add 
-    audiorw 
     sndfile 
     mongocxx 
     bsoncxx 
@@ -44,7 +45,6 @@ target_link_libraries(add
 # Define source files for `shazam` executable
 add_executable(shazam query.cpp utils.cpp)
 target_link_libraries(shazam 
-    audiorw 
     sndfile 
     mongocxx 
     bsoncxx 
