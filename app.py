@@ -30,9 +30,7 @@ def fetch_songs():
         return []
 
 
-def record_audio(duration=8, sample_rate=44100):
-     st.info("Recording... Speak now!")
-     
+def record_audio(duration=13, sample_rate=44100):
      audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='int16')
      sd.wait()
      temp_wav = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
@@ -57,10 +55,10 @@ def add_song(file_path, song_name, artist_name):
 st.title("Look-It-Up")
 
 
-tab1, tab2, tab3 = st.tabs(["Upload & Search", "Add New Song to Database","View Database"])
+tab1, tab2, tab3 = st.tabs(["Search", "Add New Song to Database","View Database"])
 
 with tab1:
-    st.subheader("Record & Search a Song")
+    st.subheader("Search a Song")
     st.markdown("""
         <style>
         @keyframes pulse {
@@ -88,11 +86,10 @@ with tab1:
     st.write("")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("🎤 Start Recording", use_container_width=True):
+        if st.button("Start Recording", use_container_width=True):
             with st.spinner("Recording... Speak now!"):
                 audio_path = record_audio()
 
-            st.success("Recording complete! Searching for match...")
 
             with st.spinner("Matching song..."):
                 return_code, output = find_song(audio_path)

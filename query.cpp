@@ -124,13 +124,8 @@ void findSongMatch(const std::string& filePath) {
 
         if (matches.empty()) {
             std::cout << "\nNo match found." << std::endl;
-        } else {
-            std::cout << "\nMatches Found:\n";
-            for (size_t i = 0; i < std::min(matches.size(), static_cast<size_t>(20)); ++i) {
-                std::cout << matches[i].songTitle << " by " << matches[i].songArtist<< "\n";
-            }
-
-
+        } 
+        else {  
             std::cout << "\nBest Match: " << matches[0].songTitle << " by " << matches[0].songArtist<< std::endl;
         }
 
